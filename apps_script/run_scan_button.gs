@@ -43,7 +43,7 @@ function runScanNow() {
       Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json',
     },
-    payload: JSON.stringify({ ref: 'main' }),
+    payload: JSON.stringify({ ref: 'master' }),
     muteHttpExceptions: true,
   });
 
