@@ -2,8 +2,8 @@ name: Daily Follower Scan
 
 on:
   schedule:
-    # 07:00 UTC daily
-    - cron: "0 7 * * *"
+    # 09:00 WIB (UTC+7, no DST) = 02:00 UTC daily
+    - cron: "0 2 * * *"
   workflow_dispatch: {}
 
 permissions:
