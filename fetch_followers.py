@@ -69,7 +69,7 @@ def run() -> None:
     else:
         logger.warning("No successful results this run; history.csv not updated.")
 
-    report = build_report()
+    report = build_report(accounts=accounts)
 
     status = "ok" if errors == 0 else ("partial" if results else "failed")
     if config.SHEETS_ENABLED:

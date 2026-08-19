@@ -5,6 +5,7 @@ from the current history.csv, or imported by fetch_followers.py to get the same
 rows for writing to the Google Sheet "Report" tab.
 """
 import logging
+from typing import Optional
 
 import pandas as pd
 
@@ -15,14 +16,23 @@ logger = logging.getLogger(__name__)
 REPORT_COLUMNS = ["username", "today_count", "yesterday_count", "change", "pct_change"]
 
 
-def compute_report(history_csv_path: str = config.HISTORY_CSV_PATH) -> pd.DataFrame:
+def compute_report(
+    history_csv_path: str = config.HISTORY_CSV_PATH,
+    accounts: Optional[list[str]] = None,
+) -> pd.DataFrame:
     """Read history.csv and compute day-over-day deltas per username.
 
     Uses each username's two most recent distinct dates present in the
     history, not literally "today" vs "yesterday" by calendar date, so the
     report is still meaningful if a run is skipped for a day.
+
+    If `accounts` is given, the report is limited to just those usernames
+    (history.csv itself is append-only and keeps every account ever tracked,
+    but the report should only reflect the currently tracked list).
     """
     history = pd.read_csv(history_csv_path, dtype={"username": str})
+    if accounts is not None:
+        history = history[history["username"].isin(accounts)]
     if history.empty:
         return pd.DataFrame(columns=REPORT_COLUMNS)
 
@@ -57,9 +67,10 @@ def compute_report(history_csv_path: str = config.HISTORY_CSV_PATH) -> pd.DataFr
 def build_report(
     history_csv_path: str = config.HISTORY_CSV_PATH,
     output_xlsx_path: str = config.REPORT_XLSX_PATH,
+    accounts: Optional[list[str]] = None,
 ) -> pd.DataFrame:
     """Compute the report and write it to daily_report.xlsx. Returns the DataFrame."""
-    report = compute_report(history_csv_path)
+    report = compute_report(history_csv_path, accounts=accounts)
     report.to_excel(output_xlsx_path, index=False, sheet_name="Report")
     logger.info("Wrote %d rows to %s", len(report), output_xlsx_path)
     return report
