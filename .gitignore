@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+credentials.json
+service_account.json
+instagram-tracker-*.json
+.venv/
